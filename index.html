@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Nsuns 531</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <style>
+        body {
+            background: #c4d2f5;
+            font-family: Arial, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        input {
+            line-height: 30px;
+            height: 30px; 
+            border: none;
+            padding: 0 10px;
+            padding-left: 35px;
+            width: calc(100% - 30px);
+        }
+
+        .input-container {
+            position: relative;
+            border: 1px solid #ececec;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .input-container + .input-container {
+            margin-left: 10px;
+        }
+
+        .input-container:before {
+            background-color: #c4d2f5;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            line-height: 30px;
+            color: #fff;
+            width: 30px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .input-container.is-rm:before {
+            content: "RM";
+        }
+
+        .input-container.is-tm:before {
+            content: "TR";
+        }
+
+        .input-container:after {
+            content: "kg";
+            text-align: center;
+            width: 30px;
+            height: 100%;
+            line-height: 30px;
+            background-color: #ececec;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            padding: 0 5px;
+        }
+
+        .wrapper {
+            padding: 0 20px;
+        }
+
+        .table {
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .table__header {
+            background-color: #6d7ae0;
+            color: #fff;
+            font-size: 18px;
+            font-size: 700;
+            padding: 20px 10px;
+            display: flex;
+        }
+
+        .table__header > button {
+            margin-left: auto;
+            font-size: 20px;
+            color: currentColor;
+            background: none;
+            border: none;
+            width: 30px;
+            cursor: pointer;
+        }
+
+        .table__content--hide {
+            display: none;
+        }
+
+        .table__row {
+            flex: 1;
+            font-size: 15px;
+            background-color: #fff;
+            color: #666666;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .table__row--set {
+            border-top: 1px solid #f2f2f2;
+            position: relative;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .table__row--set > p {
+            padding-left: 30px;
+        }
+
+        .table__cell {
+            flex: 1;
+        }
+
+        .table__header--subheader {
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-align: center;
+            background-color: #fff;
+            padding: 10px;
+            color: #666666;
+        }
+
+        .table__cell--half {
+            width: 50%;
+        }
+
+        .table__cell--third {
+            width: 33.33%;
+        }
+
+        .table__cell--quarter {
+            width: 25%;
+        }
+
+        .repet-number {
+            color: #6d7ae0;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="wrapper" id="app">
+        <div class="table">
+            <div class="table__header">NSuns 531 <button class="js-wrap-window">-</button></div>
+
+            <div>
+
+                <primary-exercice-item 
+                    v-for="exercice in exercices" 
+                    v-bind:element="exercice"
+                    v-bind:repetionmax="calculateRepetitionMax"
+                    v-bind:trainingmax="calculateTrainingMax"
+                >
+                </primary-exercice-item>
+
+            </div>
+
+        </div>
+
+        <div class="table">
+            <div class="table__header">Monday <button class="js-wrap-window" v-on:click="toggleClass">-</button></div>
+
+            <div class="table__content table__content--hide">
+                <div class="table__header--subheader">{{ exercices.bench.name }}</div>
+    
+                <div>
+                    <row-set-item 
+                        v-for="(set, index) in sets.exercices.monday.bench"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.bench"
+                    >
+                    </row-set-item>                
+                </div>
+    
+                <div class="table__header--subheader">{{ secondaryExercices.ohp.name }}</div>
+                <div>
+                    <!-- Based on the press perfs -->
+                    <row-set-item
+                        v-for="(set, index) in sets.exercices.monday.ohp"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.press"
+                    >
+                    </row-set-item>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="table">
+            <div class="table__header">Tuesday <button class="js-wrap-window" v-on:click="toggleClass">-</button></div>
+            
+            <div class="table__content table__content--hide">
+                <div class="table__header--subheader">{{ exercices.squat.name }}</div>
+    
+                <div>
+                    <row-set-item 
+                        v-for="(set, index) in sets.exercices.tuesday.squat"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.squat"
+                    >
+                    </row-set-item>                
+                </div>
+    
+                <div class="table__header--subheader">{{ secondaryExercices.sumoDead.name }}</div>
+                <div>
+                    <!-- Based on the deadlift perfs -->
+                    <row-set-item
+                        v-for="(set, index) in sets.exercices.tuesday.sumoDead"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.deadlift"
+                    >
+                    </row-set-item>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="app/app.js"></script>
+</body>
+</html>
