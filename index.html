@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <style>
         body {
-            background: #c4d2f5;
+            background: #f2f2f2;
             font-family: Arial, sans-serif;
         }
         
@@ -22,7 +22,7 @@
             line-height: 30px;
             height: 30px; 
             border: none;
-            padding: 0 5px;
+            padding: 5px;
             display: block;
             width: calc(100% - 60px);
             margin: auto;
@@ -40,7 +40,7 @@
         }
 
         .input-container:before {
-            background-color: #c4d2f5;
+            background-color: #85ada7;
             position: absolute;
             left: 0;
             top: 0;
@@ -57,7 +57,7 @@
         }
 
         .input-container.is-tm:before {
-            content: "TR";
+            content: "TM";
         }
 
         .input-container:after {
@@ -87,7 +87,7 @@
         }
 
         .table__header {
-            background-color: #6d7ae0;
+            background-color: #44a091;
             color: #fff;
             font-size: 18px;
             font-size: 700;
@@ -95,7 +95,12 @@
             display: flex;
         }
 
-        .table__header > button {
+        .table__header.active .wrap-window:before  {
+            transform: rotate(180deg);
+            transition: transform ease-out .2s;
+        }
+
+        .wrap-window {
             margin-left: auto;
             font-size: 20px;
             color: currentColor;
@@ -103,6 +108,17 @@
             border: none;
             width: 30px;
             cursor: pointer;
+            pointer-events: none;
+        }
+
+        .wrap-window:before {
+            content: "";
+            background: url("assets/arrow.svg") center no-repeat;
+            width: 100%;
+            height: 21px;
+            display: block;
+            transform: rotate(0deg);
+            transition: transform ease-out .2s;
         }
 
         .table__content--hide {
@@ -144,21 +160,21 @@
             color: #666666;
         }
 
-        .table__cell--half {
-            width: 50%;
-        }
-
         .table__cell--third {
-            width: 33.33%;
+            width: 40%;
         }
 
-        .table__cell--quarter {
-            width: 25%;
+        .table__cell--quart {
+            width: 20%;
         }
 
         .repet-number {
-            color: #6d7ae0;
+            color: #44a091;
             font-weight: bold;
+        }
+
+        .weight-item {
+            color: #000;
         }
 
     </style>
@@ -167,7 +183,7 @@
     
     <div class="wrapper" id="app">
         <div class="table">
-            <div class="table__header">NSuns 531 <button class="js-wrap-window">-</button></div>
+            <div class="table__header">NSuns 531 <button class="wrap-window"></button></div>
 
             <div>
 
@@ -184,7 +200,7 @@
         </div>
 
         <div class="table">
-            <div class="table__header">Monday <button class="js-wrap-window" v-on:click="toggleClass">-</button></div>
+            <div class="table__header" v-on:click="toggleClass">Monday <span class="wrap-window"></span></div>
 
             <div class="table__content table__content--hide">
                 <div class="table__header--subheader">{{ exercices.bench.name }}</div>
@@ -215,7 +231,7 @@
         </div>
 
         <div class="table">
-            <div class="table__header">Tuesday <button class="js-wrap-window" v-on:click="toggleClass">-</button></div>
+            <div class="table__header" v-on:click="toggleClass">Tuesday <button class="wrap-window"></button></div>
             
             <div class="table__content table__content--hide">
                 <div class="table__header--subheader">{{ exercices.squat.name }}</div>
