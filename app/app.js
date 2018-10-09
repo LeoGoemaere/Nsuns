@@ -88,11 +88,11 @@ Vue.component('primary-exercice-item', {
             <p class="table__cell--quart">{{ element.name }}</p>
 
             <div class="table__cell--third input-container is-rm">
-                <input type="text" v-bind:value="element.rm" v-on:change="trainingmax($event, element)">
+                <input type="number" v-bind:value="element.rm" v-on:change="trainingmax($event, element)">
             </div>
 
             <div class="table__cell--third input-container is-tm">
-                <input type="text" v-bind:value="element.tm" v-on:change="repetionmax($event, element)">
+                <input type="number" v-bind:value="element.tm" v-on:change="repetionmax($event, element)">
             </div>
         </div>
     `
