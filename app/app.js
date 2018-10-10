@@ -223,5 +223,25 @@ const app = new Vue({
         roundUpToNearestQuarter: function(value) {
             return Math.ceil(value * 4) / 4;
         }
+    },
+    mounted: function() {
+        if (localStorage.getItem('exercices')) { 
+            this.exercices = JSON.parse(localStorage.getItem('exercices'));
+        }
+
+        if (localStorage.getItem('unit')) {
+            this.unit = JSON.parse(localStorage.getItem('unit'));
+        }
+    },
+    watch: {
+        exercices: {
+            handler() {
+                localStorage.setItem('exercices', JSON.stringify(this.exercices));
+            },
+            deep: true
+        },
+        unit: function() {
+            localStorage.setItem('unit', JSON.stringify(this.unit));
+        }
     }
 });
