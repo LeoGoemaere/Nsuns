@@ -28,6 +28,19 @@
             margin: auto;
         }
 
+        select {
+            width: 100%;
+            height: 30px;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        .explanations {
+            margin-top: 20px;
+        }
+
         .input-container {
             position: relative;
             border: 1px solid #ececec;
@@ -60,10 +73,9 @@
             content: "TM";
         }
 
-        .input-container:after {
-            content: "kg";
+        .unit-input {
             text-align: center;
-            width: 20px;
+            width: 30px;
             height: 100%;
             line-height: 30px;
             background-color: #ececec;
@@ -76,6 +88,8 @@
 
         .wrapper {
             padding: 0 20px;
+            color: #666666;
+            margin-bottom: 20px;
         }
 
         .table {
@@ -86,13 +100,49 @@
             margin-top: 20px;
         }
 
+        .table__intro + .table{
+            margin-top: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .table__intro {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .table__intro p,
+        .table__intro ul {
+            font-size: 13px;
+            padding: 0 5px;
+            line-height: 20px;
+        }
+
+        .table__intro ul {
+            margin-top: 10px;
+        }
+
+        .table__intro p + p {
+            margin-top: 10px;
+        }
+
+        .table__intro__content {
+            padding: 10px 0;
+            margin: 0 10px;
+        }
+
         .table__header {
             background-color: #44a091;
             color: #fff;
             font-size: 18px;
-            font-size: 700;
             padding: 20px 10px;
             display: flex;
+            align-items: center;
+        }
+
+        .table__header--small {
+            background-color: #adadad;
+            padding: 10px;
         }
 
         .table__header.active .wrap-window:before  {
@@ -129,7 +179,6 @@
             flex: 1;
             font-size: 15px;
             background-color: #fff;
-            color: #666666;
             display: flex;
             align-items: center;
             padding: 10px;
@@ -140,6 +189,10 @@
             position: relative;
             text-align: center;
             padding: 15px;
+        }
+
+        .table__row--hl {
+            font-weight: bold;
         }
 
         .table__row--set > p {
@@ -164,8 +217,17 @@
             width: 40%;
         }
 
+        .table__cell--threequarter {
+            width: 80%;
+        }
+
         .table__cell--quart {
             width: 20%;
+        }
+
+        .table__cell--quart--hl {
+            color: #85ada7;
+            font-weight: bold;
         }
 
         .repet-number {
@@ -182,16 +244,42 @@
 <body>
     
     <div class="wrapper" id="app">
+        <div class="table table__intro">
+            <div class="table__header table__header--small" v-on:click="toggleClass">Explanations<button class="wrap-window"></button></div>
+            <div class="table__intro__content table__content--hide">
+                <p>Your training maxes will be calculated at 90% of your true max.</p>
+                <p>Each week, increase your training max if you were able to complete all the reps.</p>
+                <p>You will have to manually enter your new Training Max, which will overwrite the formula.</p>
+                <p>Taking 120-180s between sets of the first lift, 90-120s for the second lift, 60-90 for accessories.</p>
+                <p>How much you will increase your TM each week is based on how you perform in the 1+ set each day :</p>
+                <progression-list
+                    v-bind:unit="unit"
+                    v-bind:roundvalue="roundUpToNearestQuarter"
+                >
+                </progression-list>
+            </div>
+        </div>
         <div class="table">
             <div class="table__header">NSuns 531 <button class="wrap-window"></button></div>
 
             <div>
 
+                <div class="table__row">
+                    <div class="table__cell--quart table__cell--quart--hl">Units</div>
+                    <div class="table__cell--threequarter">
+                        <select name="" id="" v-model="unit" v-on:change="weightConverter">
+                            <option value="kg">kg</option>
+                            <option value="lb">lb</option>
+                        </select>
+                    </div>
+                </div>
                 <primary-exercice-item 
                     v-for="exercice in exercices" 
                     v-bind:element="exercice"
                     v-bind:repetionmax="calculateRepetitionMax"
                     v-bind:trainingmax="calculateTrainingMax"
+                    v-bind:roundvalue="roundUpToNearestQuarter"
+                    v-bind:unit="unit"
                 >
                 </primary-exercice-item>
 
@@ -208,21 +296,26 @@
                 <div>
                     <row-set-item 
                         v-for="(set, index) in sets.exercices.monday.bench"
+                        v-bind:sets="sets.exercices.monday.bench"
                         v-bind:element="set" 
                         v-bind:index="index"
                         v-bind:exercice="exercices.bench"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="true"
                     >
                     </row-set-item>                
                 </div>
     
-                <div class="table__header--subheader">{{ secondaryExercices.ohp.name }}</div>
+                <div class="table__header--subheader">{{ exercices.overheadPress.name }}</div>
                 <div>
-                    <!-- Based on the press perfs -->
                     <row-set-item
-                        v-for="(set, index) in sets.exercices.monday.ohp"
+                        v-for="(set, index) in sets.exercices.monday.overheadPress"
+                        v-bind:sets="sets.exercices.monday.overheadPress"
                         v-bind:element="set" 
                         v-bind:index="index"
-                        v-bind:exercice="exercices.press"
+                        v-bind:exercice="exercices.overheadPress"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="true"
                     >
                     </row-set-item>
                 </div>
@@ -239,9 +332,12 @@
                 <div>
                     <row-set-item 
                         v-for="(set, index) in sets.exercices.tuesday.squat"
+                        v-bind:sets="sets.exercices.tuesday.squat"
                         v-bind:element="set" 
                         v-bind:index="index"
                         v-bind:exercice="exercices.squat"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="false"
                     >
                     </row-set-item>                
                 </div>
@@ -251,9 +347,86 @@
                     <!-- Based on the deadlift perfs -->
                     <row-set-item
                         v-for="(set, index) in sets.exercices.tuesday.sumoDead"
+                        v-bind:sets="sets.exercices.tuesday.sumoDead"
                         v-bind:element="set" 
                         v-bind:index="index"
                         v-bind:exercice="exercices.deadlift"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="false"
+                    >
+                    </row-set-item>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="table">
+            <div class="table__header" v-on:click="toggleClass">Thursday <button class="wrap-window"></button></div>
+            
+            <div class="table__content table__content--hide">
+                <div class="table__header--subheader">{{ exercices.bench.name }}</div>
+    
+                <div>
+                    <row-set-item 
+                        v-for="(set, index) in sets.exercices.thursday.bench"
+                        v-bind:sets="sets.exercices.thursday.bench"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.bench"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="false"
+                    >
+                    </row-set-item>                
+                </div>
+    
+                <div class="table__header--subheader">{{ secondaryExercices.closeGripBench.name }}</div>
+                <div>
+                    <!-- Based on the bench perfs -->
+                    <row-set-item
+                        v-for="(set, index) in sets.exercices.thursday.closeGripBench"
+                        v-bind:sets="sets.exercices.thursday.closeGripBench"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.bench"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="false"
+                    >
+                    </row-set-item>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="table">
+            <div class="table__header" v-on:click="toggleClass">Friday <button class="wrap-window"></button></div>
+            
+            <div class="table__content table__content--hide">
+                <div class="table__header--subheader">{{ exercices.deadlift.name }}</div>
+    
+                <div>
+                    <row-set-item 
+                        v-for="(set, index) in sets.exercices.friday.deadlift"
+                        v-bind:sets="sets.exercices.friday.deadlift"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.deadlift"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="false"
+                    >
+                    </row-set-item>                
+                </div>
+    
+                <div class="table__header--subheader">{{ secondaryExercices.frontSquat.name }}</div>
+                <div>
+                    <!-- Based on the squat perfs -->
+                    <row-set-item
+                        v-for="(set, index) in sets.exercices.friday.frontSquat"
+                        v-bind:sets="sets.exercices.friday.frontSquat"
+                        v-bind:element="set" 
+                        v-bind:index="index"
+                        v-bind:exercice="exercices.squat"
+                        v-bind:unit="unit"
+                        v-bind:isspecialday="false"
                     >
                     </row-set-item>
                 </div>
