@@ -162,6 +162,7 @@ Vue.component('row-set-item', {
         <div class="table__row table__row--set" v-bind:class="[sets.length - 1 === index || index === 2 && isspecialday === false ? 'table__row--hl' : '']">
             <span class="item-number">{{ index + 1 }}</span>
             <p><span class="repet-number">{{ element.reps }} {{sets.length - 1 === index || index === 2 && isspecialday === false ? '+': null}} </span> @ <span class="weight-item">{{ Math.ceil( ((exercice.tm) * (element.tm)) * 4) / 4 }}</span> {{ unit }}</p>
+            <span class="tm-percentage">{{ Math.round(element.tm * 100) }}%</span>
         </div>
     `
 })
