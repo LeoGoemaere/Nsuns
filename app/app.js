@@ -65,7 +65,7 @@ const trainingMaxSets = {
                 { tm: 0.95, reps: 1 }, 
                 { tm: 0.90, reps: 3 },
                 { tm: 0.85, reps: 3 },
-                { tm: 0.80, reps: 2 },
+                { tm: 0.80, reps: 3 },
                 { tm: 0.75, reps: 5 },
                 { tm: 0.70, reps: 5 },
                 { tm: 0.65, reps: 5 }
@@ -156,12 +156,13 @@ Vue.component('row-set-item', {
         exercice: Object,
         sets: Array,
         unit: String,
-        isspecialday: Boolean
+        isspecialday: Boolean,
+        isprimaryexercice: Boolean
     },
     template: `
-        <div class="table__row table__row--set" v-bind:class="[sets.length - 1 === index || index === 2 && isspecialday === false ? 'table__row--hl' : '']">
+        <div class="table__row table__row--set" v-bind:class="[sets.length - 1 === index && isprimaryexercice || index === 2 && isprimaryexercice && !isspecialday ? 'table__row--hl' : '']">
             <span class="item-number">{{ index + 1 }}</span>
-            <p><span class="repet-number">{{ element.reps }} {{sets.length - 1 === index || index === 2 && isspecialday === false ? '+': null}} </span> @ <span class="weight-item">{{ Math.ceil( ((exercice.tm) * (element.tm)) * 4) / 4 }}</span> {{ unit }}</p>
+            <p><span class="repet-number">{{ element.reps }} {{sets.length - 1 === index && isprimaryexercice || index === 2 && isprimaryexercice && !isspecialday ? '+': null}}</span> @ <span class="weight-item">{{ Math.ceil( ((exercice.tm) * (element.tm)) * 4) / 4 }}</span> {{ unit }}</p>
             <span class="tm-percentage">{{ Math.round(element.tm * 100) }}%</span>
         </div>
     `
